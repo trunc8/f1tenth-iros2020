@@ -1,4 +1,4 @@
-#!/usr/bin/env conda run -n bebot python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 """
