@@ -1,0 +1,11 @@
+{
+    "local_planner": {
+        "time_horizon": 3.0
+    },
+    "tt_controller": {
+        "dummy_value": true
+    },
+    "obstacle_detector": {
+        "dummy_value": true
+    }
+}
