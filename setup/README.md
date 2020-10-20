@@ -16,9 +16,13 @@
 13. Replace the `CMakeLists.txt` file with the one provided here in this setup directory.
 14. `roscd obstacle_detector/src`
 15. Replace the `obstacle_detector.cpp` file with `obstacle_detector_src.cpp` provided here in this setup directory.
-16. `cd /path/to/catkin_ws`
-17. `catkin_make -j4`
-18. `roscd f1tenth_gym_ros`
-19. `sudo ./build_docker.sh` (**Note**: This must be run every time you change the map file path [Recall steps 5 and 7] )
+16. Roscd f1tenth_gym_ros
+17. Create src and include folders
+18. Add MPC_Node.cpp and MPC.cpp to the src folder
+19. Add MPC.h to the include folder
+20. `cd /path/to/catkin_ws`
+21. `catkin_make -j4`
+22. `roscd f1tenth_gym_ros`
+23. `sudo ./build_docker.sh` (**Note**: This must be run every time you change the map file path [Recall steps 5 and 7] )
 
 
