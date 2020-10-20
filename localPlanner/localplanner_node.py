@@ -15,10 +15,13 @@ import matplotlib.pyplot as plt
 from numba import njit
 import numpy as np
 from scipy.optimize import Bounds, minimize
+from scipy.spatial.transform import Rotation as R
 
+from obstacle_detector.msg import Obstacles
+from nav_msgs.msg import Odometry
 import rospy
-from trajectory_msgs.msg import JointTrajectoryPoint
 
+from f1tenth_iros2020.msg import Trajectory
 from optimization.AngularRate import angularRate
 from optimization.Speed import speed
 from optimization.ObstacleAvoidance import obstacleAvoidance
@@ -115,6 +118,25 @@ def _reshape(x, deg, tf, x0, v0, psi0):
     return y
 
 
+def odomCB(data, lp):
+    x = data.pose.pose.position.x
+    y = data.pose.pose.position.y
+    v = data.twist.twist.x
+
+    wq = data.pose.pose.orientation.w
+    xq = data.pose.pose.orientation.x
+    yq = data.pose.pose.orientation.y
+    zq = data.pose.pose.orientation.z
+    r = R.from_quat([xq, yq, zq, wq])
+    phi, gamma, psi = r.as_euler('xyz')
+
+    lp.setInitState(np.array([x, y], dtype=float), v, psi)
+
+
+def obsCB(data, lp):
+    pass
+
+
 if __name__ == '__main__':
     with open(os.path.join(os.path.dirname(__file__), '..', 'config.json'), 'r') as f:
         data = json.load(f)
@@ -126,7 +148,8 @@ if __name__ == '__main__':
     rospy.init_node('local_planner')
     planPub = rospy.Publisher('local_planner/trajectory', Trajectory, queue_size=10)
 
-    rospy.Subscriber('/odom')
+    rospy.Subscriber('/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
+    rospy.Subscriber('/processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
 
     tlast = rospy.get_time()
     while not rospy.is_shutdown():
