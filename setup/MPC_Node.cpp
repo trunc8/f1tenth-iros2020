@@ -149,7 +149,7 @@ MPCNode::MPCNode()
     pn.param("mpc_steps", _mpc_steps, 20.0);
     pn.param("mpc_ref_cte", _ref_cte, 0.0);
     pn.param("mpc_ref_epsi", _ref_epsi, 0.0);
-    pn.param("mpc_ref_vel", _ref_vel, 1.5);
+    //pn.param("mpc_ref_vel", _ref_vel, 1.5);
     pn.param("mpc_w_cte", _w_cte, 100.0);
     pn.param("mpc_w_epsi", _w_epsi, 100.0);
     pn.param("mpc_w_vel", _w_vel, 100.0);
@@ -279,6 +279,10 @@ void MPCNode::pathCB(const trajectory_msgs::JointTrajectory::ConstPtr& pathMsg)
     {
         _path.points = pathMsg->points;  
         _path_computed = true;
+        double speed = std::sqrt(pathMsg->points.velocities[0]*pathMsg->points.velocities[0] + 
+                                 pathMsg->points.velocities[1]*pathMsg->points.velocities[1]);
+
+        ref_vel = speed;
     }
 }
 

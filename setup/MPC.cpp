@@ -61,7 +61,7 @@ class FG_eval
             _x_start     = 0;
             _y_start     = _x_start + _mpc_steps;
             _psi_start   = _y_start + _mpc_steps;
-            _v_start     = _psi_start + _mpc_steps;
+            _v_start     = _v_start + _mpc_steps;
             _cte_start     = _cte_start + _mpc_steps;
             _epsi_start  = _epsi_start + _mpc_steps;
             _delta_start = _delta_start + _mpc_steps;
@@ -76,7 +76,7 @@ class FG_eval
             _mpc_steps = params.find("STEPS") != params.end()    ? params.at("STEPS") : _mpc_steps;
             _ref_cte   = params.find("REF_CTE") != params.end()  ? params.at("REF_CTE") : _ref_cte;
             _ref_epsi  = params.find("REF_EPSI") != params.end() ? params.at("REF_EPSI") : _ref_epsi;
-            _ref_vel   = params.find("REF_V") != params.end()    ? params.at("REF_V") : _ref_vel;
+            //_ref_vel   = params.find("REF_V") != params.end()    ? params.at("REF_V") : _ref_vel;
             
             _w_cte   = params.find("W_CTE") != params.end()   ? params.at("W_CTE") : _w_cte;
             _w_epsi  = params.find("W_EPSI") != params.end()  ? params.at("W_EPSI") : _w_epsi;
@@ -89,7 +89,7 @@ class FG_eval
             _x_start     = 0;
             _y_start     = _x_start + _mpc_steps;
             _psi_start   = _y_start + _mpc_steps;
-            _v_start     = _psi_start + _mpc_steps;
+            _v_start     = _v_start + _mpc_steps;
             _cte_start     = _cte_start + _mpc_steps;
             _epsi_start  = _epsi_start + _mpc_steps;
             _delta_start = _delta_start + _mpc_steps;
