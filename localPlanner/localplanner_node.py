@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/ckjensen/anaconda3/envs/bebot/bin/python
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 19 15:57:17 2020
@@ -8,10 +8,10 @@ Created on Mon Oct 19 15:57:17 2020
 # Add paths
 import os
 import sys
-sys.path.append(os.path.join('..', 'ext', 'BeBOT'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'ext', 'BeBOT'))
 
 import json
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from numba import njit
 import numpy as np
 from scipy.optimize import Bounds, minimize
@@ -40,7 +40,8 @@ class LocalPlanner:
 
         self.debug = debug
 
-        with open('waypoints.npy', 'rb') as f:
+        fname = os.path.join(os.path.dirname(__file__), 'waypoints.npy')
+        with open(fname, 'rb') as f:
             self.wpts = np.load(f)
 
         self.x0 = self.wpts[100, :2]
@@ -144,7 +145,7 @@ def _reshape(x, deg, tf, x0, v0, psi0):
 def odomCB(data, lp):
     x = data.pose.pose.position.x
     y = data.pose.pose.position.y
-    v = data.twist.twist.x
+    v = data.twist.twist.linear.x
 
     wq = data.pose.pose.orientation.w
     xq = data.pose.pose.orientation.x
@@ -215,7 +216,7 @@ if __name__ == '__main__':
 
     rospy.Subscriber('/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
     rospy.Subscriber('/processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
-    rospy.Subscriber('/map')
+    rospy.Subscriber('/map', OccupancyGrid, lambda x: mapCB(x, lp), queue_size=10)
 
     rospy.loginfo('Waiting for odometry message...')
     rospy.wait_for_message('/odom', Odometry)
