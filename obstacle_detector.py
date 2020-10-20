@@ -10,7 +10,7 @@ import math
 
 class Obstacle_Detector:
     def __init__(self):
-    	self.loop_rate = rospy.Rate(1)
+        self.loop_rate = rospy.Rate(1)
         self.obstacle_msg = Float64MultiArray()
         self.pub = rospy.Publisher('obstacles', Float64MultiArray, queue_size=10)
 

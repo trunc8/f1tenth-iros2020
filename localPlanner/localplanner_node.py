@@ -17,11 +17,12 @@ import numpy as np
 from scipy.optimize import Bounds, minimize
 from scipy.spatial.transform import Rotation as R
 
-from obstacle_detector.msg import Obstacles
+# from obstacle_detector.msg import Obstacles
 from nav_msgs.msg import Odometry
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import rospy
 
-from f1tenth_iros2020.msg import Trajectory
+from f1tenth_iros2020.msg import Trajectory, Obstacles
 from optimization.AngularRate import angularRate
 from optimization.Speed import speed
 from optimization.ObstacleAvoidance import obstacleAvoidance
@@ -29,7 +30,7 @@ from polynomial.bernstein import Bernstein
 
 
 class LocalPlanner:
-    def __init__(self, deg=3, elev=10, tf=3.0, vmax=10.0, wmax=np.pi/5, dsafe=0.3, debug=False):
+    def __init__(self, deg=3, elev=10, tf=3.0, vmax=7.0, wmax=np.pi/2, dsafe=0.03, debug=False):
         self.deg = deg
         self.elev = elev
         self.tf = tf
@@ -39,11 +40,14 @@ class LocalPlanner:
 
         self.debug = debug
 
-        self.x0 = np.array([0, 0], dtype=float)
+        with open('waypoints.npy', 'rb') as f:
+            self.wpts = np.load(f)
+
+        self.x0 = self.wpts[100, :2]
         self.v0 = 1.0
-        self.psi0 = np.pi/4
-        self.xf = np.array([5, 5], dtype=float)
-        self.obs = np.array([[3, 3], [4, 1], [1, 2]])
+        self.psi0 = np.arctan2(self.wpts[101, 1] - self.wpts[100, 1], self.wpts[101, 0] - self.wpts[100, 0])
+        self.obs = -np.array([[3, 3], [4, 1], [1, 2]]) + self.wpts[100, :2]
+        self.obsRad = np.array([0.01, 0.02, 0.03])
 
     def setInitState(self, x0, v0, psi0):
         self.x0 = x0
@@ -57,11 +61,17 @@ class LocalPlanner:
         self.xf = xf
 
     def initGuess(self):
-        lin = np.linspace(0, 1, self.deg-1)
-        x = self.x0[0] + self.v0*np.cos(self.psi0)*self.tf/self.deg + lin*(self.xf[0] - self.x0[0])
-        y = self.x0[1] + self.v0*np.sin(self.psi0)*self.tf/self.deg + lin*(self.xf[1] - self.x0[1])
+        temp = np.append(self.x0, self.psi0)
+        idx = np.argmin(np.abs(temp - self.wpts).sum(1))
+        xf = self.wpts[idx+25, :2]
 
-        x0 = np.concatenate((x, y))
+        x1 = self.x0[0] + self.v0*np.cos(self.psi0)*self.tf/self.deg
+        y1 = self.x0[1] + self.v0*np.sin(self.psi0)*self.tf/self.deg
+        lin = np.linspace(0, 1, self.deg)
+        x = x1 + lin*(xf[0] - x1)
+        y = y1 + lin*(xf[1] - y1)
+
+        x0 = np.concatenate((x[1:], y[1:]))
 
         return x0
 
@@ -73,17 +83,24 @@ class LocalPlanner:
 
         maxSpeed = self.vmax**2 - speed(traj)
         maxAngRate = self.wmax**2 - angularRate(traj)
-        separation = obstacleAvoidance([traj], self.obs, elev=self.elev) - self.dsafe**2
+        radii = np.repeat(self.obsRad**2, 2*self.deg+1+self.elev)
+        separation = obstacleAvoidance([traj], self.obs, elev=self.elev) - radii - self.dsafe**2
 
         return np.concatenate([maxSpeed, maxAngRate, separation])
 
     def cost(self, x):
         y = _reshape(x, self.deg, self.tf, self.x0, self.v0, self.psi0)
 
-        euclid = 1/np.diff(y**2).sum()
-        terminal = ((y[:, -1] - self.xf)**2).sum()
+        # euclid = np.diff(y**2).sum()
+        dist = -np.linalg.norm(y[:, -1] - y[:, 0])
 
-        return euclid + terminal
+        # terminal = ((y[:, -1] - self.xf)**2).sum()
+        # psif = np.arctan2(y[1, -1]-y[1, -2], y[0, -1]-y[0, -2])
+        # xf = np.append(y[:, -1], psif)
+        # terminal = np.abs(xf - self.wpts).sum(1).min()
+        terminal = ((y[:, -1] - self.wpts[:, :-1])**2).sum(1).min()
+
+        return 10*terminal + dist
 
 
     def plan(self):
@@ -100,6 +117,7 @@ class LocalPlanner:
                                     'disp': self.debug,
                                     'iprint': 1})
 
+        self.res = results
         y = _reshape(results.x, self.deg, self.tf, self.x0, self.v0, self.psi0)
         traj = Bernstein(y, tf=self.tf)
 
@@ -137,6 +155,25 @@ def obsCB(data, lp):
     pass
 
 
+def buildTrajMsg(traj, thor):
+    T = np.linspace(0, thor, 100)
+    trajMsg = JointTrajectory()
+
+    for t in T:
+        pt = JointTrajectoryPoint()
+        pt.time_from_start = rospy.Duration(t)
+        pt.positions = list(traj(t))
+        pt.velocities = list(traj.diff()(t))
+        pt.accelerations = list(traj.diff().diff()(t))
+
+        trajMsg.points.append(pt)
+
+    trajMsg.header.frame_id = 'map'
+    trajMsg.header.stamp = rospy.get_rostime()
+
+    return trajMsg
+
+
 if __name__ == '__main__':
     with open(os.path.join(os.path.dirname(__file__), '..', 'config.json'), 'r') as f:
         data = json.load(f)
@@ -146,14 +183,41 @@ if __name__ == '__main__':
 
     # Initialize ROS
     rospy.init_node('local_planner')
-    planPub = rospy.Publisher('local_planner/trajectory', Trajectory, queue_size=10)
+    planPub = rospy.Publisher('/waypoints', Trajectory, queue_size=10)
 
     rospy.Subscriber('/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
     rospy.Subscriber('/processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
 
+    rospy.loginfo('Waiting for odometry message...')
+    rospy.wait_for_message('/odom', Odometry)
+    rospy.loginfo('---> Odometry message found!')
+    rospy.loginfo('Waiting for obstacle message...')
+    rospy.wait_for_message('/processed_obstacles', Obstacles)
+    rospy.loginfo('---> Obstacle message found!')
+
+    traj = lp.plan()
+
+    #=========================================================================
+    # Testing Code
+    #
+    # print(lp.res)
+    # print(lp.nonlcon(lp.initGuess()))
+    # y = _reshape(lp.initGuess(), lp.deg, lp.tf, lp.x0, lp.v0, lp.psi0)
+    # trajInit = Bernstein(y, tf=lp.tf)
+    # plt.close('all')
+    # ax = traj.plot()
+    # ax.plot(lp.wpts[100:150, 0], lp.wpts[100:150, 1])
+    # for i, obs in enumerate(lp.obs):
+    #     ax.add_artist(plt.Circle(obs, radius=lp.obsRad[i], ec='k'))
+    # trajInit.plot(ax)
+    #=========================================================================
+
+    trajMsg = buildTrajMsg(traj, thor)
+    planPub.publish(trajMsg)
     tlast = rospy.get_time()
     while not rospy.is_shutdown():
         tnow = rospy.get_time()
+
         if tnow - tlast >= thor:
             tlast = tnow
 

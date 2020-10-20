@@ -27,7 +27,7 @@ def angularRate(bp, elev=DEG_ELEV):
 
     cpts = num.elev(elev).cpts / den.elev(elev).cpts
 
-    return cpts.squeeze()
+    return np.nan_to_num(cpts.squeeze())
 
     # wgts = den.elev(elev).cpts
 

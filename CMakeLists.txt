@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -51,6 +52,9 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   Trajectory.msg
+  CircleObstacle.msg
+  SegmentObstacle.msg
+  Obstacles.msg
 #   Message1.msg
 #   Message2.msg
 )
@@ -73,6 +77,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 ################################################
