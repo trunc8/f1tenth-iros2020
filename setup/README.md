@@ -18,8 +18,8 @@
 15. Replace the `obstacle_detector.cpp` file with `obstacle_detector_src.cpp` provided here in this setup directory.
 16. Roscd f1tenth_gym_ros
 17. Create src and include folders
-18. Add MPC_Node.cpp and MPC.cpp to the src folder
-19. Add MPC.h to the include folder
+18. Add MPC_Node.cpp and MPC.cpp to the f1tenth_gym_ros/src folder
+19. Add MPC.h (inside setup/include) to the f1tenth_gym_ros/include folder
 20. `cd /path/to/catkin_ws`
 21. `catkin_make -j4`
 22. `roscd f1tenth_gym_ros`
