@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 """
+# Add paths
+import os, sys
+sys.path.append(os.path.join('..', 'ext', 'BeBOT'))
+
 import matplotlib.pyplot as plt
 from numba import njit
 import numpy as np
@@ -23,7 +27,7 @@ def initGuess(params):
     return x0
 
 
-# @njit(cache=True)
+@njit(cache=True)
 def reshape(x, deg, tf, x0, v0, psi0):
     y = np.empty((2, deg+1))
     y[:, 0] = x0
