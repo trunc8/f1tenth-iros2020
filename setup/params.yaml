@@ -1,0 +1,176 @@
+ego_scan_topic: '/scan'
+ego_odom_topic: '/odom'
+opp_odom_topic: '/opp_odom'
+ego_drive_topic: '/drive'
+
+lap_count_topic: '/lap_count'
+lap_time_topic: '/lap_time'
+collision_topic: '/collision'
+
+race_info_topic: '/race_info'
+
+# fixed vals DO NOT CHANGE
+scan_fov: 4.7
+scan_beams: 1080
+scan_distance_to_base_link: 0.275
+
+map_path: '/f1tenth_gym/maps/vegas_obstacle.yaml'
+#map_path: '/f1tenth_gym/maps/vegas.yaml'
+map_img_ext: '.png'
+executable_dir: '/f1tenth_gym/build/'
+
+waypoints_path: '/catkin_ws/src/f1tenth_gym_ros/maps/skirk.csv'
+
+# delta time
+DT: 0.2 # sec
+
+# The distance between the front and
+# rear axle of the racecar
+wheelbase: 0.3302 # meters
+# width of racecar
+width: 0.2032 # meters
+
+# steering delay
+buffer_length: 5
+
+# Limits on the speed and steering angle
+max_speed: 7. #  meters/second
+max_steering_angle: 0.4189 # radians
+max_accel: 7.51 # meters/second^2
+max_decel: 8.26 # meters/second^2
+max_steering_vel: 3.2 # radians/second
+friction_coeff: 0.523 # - (complete estimate)
+height_cg: 0.074 # m (roughly measured to be 3.25 in)
+l_cg2rear: 0.17145 # m (decently measured to be 6.75 in)
+l_cg2front: 0.15875 # m (decently measured to be 6.25 in)
+C_S_front: 4.718 #.79 # 1/rad ? (estimated weight/4)
+C_S_rear: 5.4562 #.79 # 1/rad ? (estimated weight/4)
+mass: 3.47 # kg (measured on car 'lidart')
+moment_inertia: .04712 # kg m^2 (estimated as a rectangle with width and height of car and evenly distributed mass, then shifted to account for center of mass location)
+
+# The rate at which the pose and the lidar publish
+update_pose_rate: 0.001
+
+# Lidar simulation parameters
+scan_beams: 1080
+scan_field_of_view: 6.2831853 #4.71 # radians
+
+
+# The distance from the center of the
+# rear axis (base_link) to the lidar
+scan_distance_to_base_link: 0.275 # meters
+
+# The standard deviation of the noise applied
+# to the lidar simulation
+scan_std_dev: 0.01 # meters
+
+# The probability threshold for points
+# in the occupancy grid to be considered "free".
+# Used for the lidar simulator.
+map_free_threshold: 0.8
+
+# Time to collision cutoff value
+ttc_threshold: 0.01
+
+# Indices for mux controller
+mux_size: 5
+joy_mux_idx: 0
+key_mux_idx: 1
+random_walker_mux_idx: 2
+brake_mux_idx: 3
+nav_mux_idx: 4
+# **Add index for new planning method here**
+# **(increase mux_size accordingly)**
+new_method_mux_idx: -1
+
+# Enables joystick if true
+joy: true
+# Joystick indices
+joy_speed_axis: 1
+joy_angle_axis: 3
+joy_max_speed: 2. # meters/second
+# Joystick indices for toggling mux
+joy_button_idx: 4  # LB button
+key_button_idx: 6 # not sure 
+brake_button_idx: 0 # A button
+random_walk_button_idx: 1 # ? button
+nav_button_idx: 5 # RB button
+# **Add button for new planning method here**
+new_button_idx: -1
+
+# Keyboard characters for toggling mux
+joy_key_char: "j"
+keyboard_key_char: "k"
+brake_key_char: "b"
+random_walk_key_char: "r"
+nav_key_char: "n"
+# **Add button for new planning method here**
+new_key_char: "z"
+
+# Keyboard driving params
+keyboard_speed: 1.8  # meters/second
+keyboard_steer_ang: .3  # radians
+
+# obstacle parameters
+obstacle_size: 2
+
+# The names of topics to listen and publish to
+joy_topic: "/joy"
+drive_topic: "/drive"
+map_topic: "/map"
+distance_transform_topic: "/dt"
+scan_topic: "/scan"
+pose_topic: "/pose"
+ground_truth_pose_topic: "/gt_pose"
+odom_topic: "/odom"
+imu_topic: "/imu"
+pose_rviz_topic: "/initialpose"
+keyboard_topic: "/key"
+brake_bool_topic: "/brake_bool"
+mux_topic: "/mux"
+
+# Topic names of various drive channels
+rand_drive_topic: "/rand_drive"
+brake_drive_topic: "/brake"
+nav_drive_topic: "/nav"
+# **Add name for new planning method here**
+new_drive_topic: "/new_drive"
+
+# name of file to write collision log to 
+collision_file: "collision_file"
+
+# The names of the transformation frames published to
+map_frame: "map"
+base_frame: "base_link"
+scan_frame: "laser"
+
+broadcast_transform: true
+publish_ground_truth_pose: true
+
+# Parameters for control loop
+pub_twist_cmd: true
+debug_info: false
+delay_mode: true
+max_speed: 1.5 # unit: m/s 
+waypoints_dist: -1.0 # unit: m, set < 0 means computed by node
+path_length: 3.0 # unit: m
+goal_radius: 0.2 # unit: m
+controller_freq: 10
+vehicle_Lf: 0.0723 # distance between the front of the vehicle and its center of gravity
+
+# Parameter for MPC solver
+mpc_steps: 20.0
+mpc_ref_cte: 0.0
+mpc_ref_epsi: 0.0
+mpc_ref_vel: 1.0
+mpc_w_cte: 100.0
+mpc_w_epsi: 100.0
+mpc_w_vel: 100.0
+mpc_w_delta: 100.0
+mpc_w_accel: 50.0
+mpc_w_delta_d: 0.0
+mpc_w_accel_d: 0.0
+mpc_max_steering: 0.436 # Maximal steering radian (~25 deg)
+mpc_max_throttle: 0.8 # Maximal throttle accel
+mpc_bound_value: 1.0e3 # Bound value for other variables
+
