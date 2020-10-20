@@ -18,7 +18,7 @@ from scipy.optimize import Bounds, minimize
 from scipy.spatial.transform import Rotation as R
 
 # from obstacle_detector.msg import Obstacles
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import Odometry, OccupancyGrid
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import rospy
 
@@ -44,7 +44,7 @@ class LocalPlanner:
             self.wpts = np.load(f)
 
         self.x0 = self.wpts[100, :2]
-        self.v0 = 1.0
+        self.v0 = 0
         self.psi0 = np.arctan2(self.wpts[101, 1] - self.wpts[100, 1], self.wpts[101, 0] - self.wpts[100, 0])
         self.obs = -np.array([[3, 3], [4, 1], [1, 2]]) + self.wpts[100, :2]
         self.obsRad = np.array([0.01, 0.02, 0.03])
@@ -85,8 +85,9 @@ class LocalPlanner:
         maxAngRate = self.wmax**2 - angularRate(traj)
         radii = np.repeat(self.obsRad**2, 2*self.deg+1+self.elev)
         separation = obstacleAvoidance([traj], self.obs, elev=self.elev) - radii - self.dsafe**2
+        track = obstacleAvoidance([traj], self.track, elev=self.elev) - self.dsafe**2
 
-        return np.concatenate([maxSpeed, maxAngRate, separation])
+        return np.concatenate([maxSpeed, maxAngRate, separation, track])
 
     def cost(self, x):
         y = _reshape(x, self.deg, self.tf, self.x0, self.v0, self.psi0)
@@ -118,7 +119,11 @@ class LocalPlanner:
                                     'iprint': 1})
 
         self.res = results
-        y = _reshape(results.x, self.deg, self.tf, self.x0, self.v0, self.psi0)
+        # If we are not successful, just assume a straight line guess
+        if results.success:
+            y = _reshape(results.x, self.deg, self.tf, self.x0, self.v0, self.psi0)
+        else:
+            y = _reshape(x0, self.deg, self.tf, self.x0, self.v0, self.psi0)
         traj = Bernstein(y, tf=self.tf)
 
         return traj
@@ -152,7 +157,30 @@ def odomCB(data, lp):
 
 
 def obsCB(data, lp):
-    pass
+    obsList = []
+    obsRadList = []
+    for circ in data.circles:
+        obsList.append((circ.center.x, circ.center.y))
+        obsRadList.append(circ.radius)
+
+    lp.obs = np.array(obsList, dtype=float)
+    lp.obsRad = np.array(obsRadList, dtype=float)
+
+
+def mapCB(data, lp):
+    width = data.info.width
+    height = data.info.height
+    resolution = data.info.resolution
+
+    grid = np.reshape(data.data, (width, height))
+
+    centerMin = np.round((lp.x0-7)/resolution).astype(int)
+    centerMax = np.round((lp.x0+7)/resolution).astype(int)
+
+    locGrid = grid[centerMin[0]:centerMax[0], centerMin[1]:centerMax[1]]
+    x, y = np.where(locGrid > 50)
+
+    lp.track = np.vstack((x, y))
 
 
 def buildTrajMsg(traj, thor):
@@ -181,12 +209,13 @@ if __name__ == '__main__':
 
     lp = LocalPlanner()
 
-    # Initialize ROS
+    # # Initialize ROS
     rospy.init_node('local_planner')
     planPub = rospy.Publisher('/waypoints', Trajectory, queue_size=10)
 
     rospy.Subscriber('/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
     rospy.Subscriber('/processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
+    rospy.Subscriber('/map')
 
     rospy.loginfo('Waiting for odometry message...')
     rospy.wait_for_message('/odom', Odometry)
@@ -199,7 +228,7 @@ if __name__ == '__main__':
 
     #=========================================================================
     # Testing Code
-    #
+
     # print(lp.res)
     # print(lp.nonlcon(lp.initGuess()))
     # y = _reshape(lp.initGuess(), lp.deg, lp.tf, lp.x0, lp.v0, lp.psi0)
@@ -217,7 +246,9 @@ if __name__ == '__main__':
     tlast = rospy.get_time()
     while not rospy.is_shutdown():
         tnow = rospy.get_time()
-
         if tnow - tlast >= thor:
             tlast = tnow
+            traj = lp.plan()
+            trajMsg = buildTrajMsg(traj, thor)
+            planPub.publish(trajMsg)
 
