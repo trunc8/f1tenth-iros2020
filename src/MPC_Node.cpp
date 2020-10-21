@@ -31,7 +31,7 @@
 #include <ackermann_msgs/AckermannDriveStamped.h>
 #include <visualization_msgs/Marker.h>
 
-#include "MPC.h"
+#include "f1tenth_iros2020/MPC.h"
 #include <Eigen/Core>
 #include <Eigen/QR>
 

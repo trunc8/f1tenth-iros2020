@@ -13,7 +13,8 @@ RUN apt-get install -y git \
                        cmake \
                        vim \
                        ros-melodic-ackermann-msgs \
-                       ros-melodic-genpy
+                       ros-melodic-genpy \
+                       libeigen3-dev
 
 # Upgrade pip
 # RUN pip install --upgrade pip
