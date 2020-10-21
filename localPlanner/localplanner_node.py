@@ -39,6 +39,7 @@ class LocalPlanner:
         self.dsafe = dsafe
 
         self.debug = debug
+        self.planning = False
 
         fname = os.path.join(os.path.dirname(__file__), 'waypoints.npy')
         with open(fname, 'rb') as f:
@@ -51,15 +52,19 @@ class LocalPlanner:
         self.obsRad = np.array([0.01, 0.02, 0.03])
 
     def setInitState(self, x0, v0, psi0):
-        self.x0 = x0
-        self.v0 = v0
-        self.psi0 = psi0
+        if not self.planning:
+            self.x0 = x0
+            self.v0 = v0
+            self.psi0 = psi0
 
-    def setObstacles(self, obstacleArray):
-        self.obs = obstacleArray.astype(float)
+    def setObstacles(self, obstacleArray, obstacleRad):
+        if not self.planning:
+            self.obs = obstacleArray.astype(float)
+            self.obsRad = obstacleRad.astype(float)
 
-    def setTerminal(self, xf):
-        self.xf = xf
+    def setTrack(self, track):
+        if not self.planning:
+            self.track = track
 
     def initGuess(self):
         temp = np.append(self.x0, self.psi0)
@@ -106,6 +111,8 @@ class LocalPlanner:
 
 
     def plan(self):
+        self.planning = True
+
         x0 = self.initGuess()
 
         cons = [{'type': 'ineq',
@@ -122,10 +129,14 @@ class LocalPlanner:
         self.res = results
         # If we are not successful, just assume a straight line guess
         if results.success:
+            rospy.loginfo('Successful Local Plan')
             y = _reshape(results.x, self.deg, self.tf, self.x0, self.v0, self.psi0)
         else:
+            rospy.loginfo('[!] Local Planner Failed')
             y = _reshape(x0, self.deg, self.tf, self.x0, self.v0, self.psi0)
         traj = Bernstein(y, tf=self.tf)
+
+        self.planning = False
 
         return traj
 
@@ -164,8 +175,7 @@ def obsCB(data, lp):
         obsList.append((circ.center.x, circ.center.y))
         obsRadList.append(circ.radius)
 
-    lp.obs = np.array(obsList, dtype=float)
-    lp.obsRad = np.array(obsRadList, dtype=float)
+    lp.setObstacles(np.array(obsList), np.array(obsRadList))
 
 
 def mapCB(data, lp):
@@ -181,7 +191,7 @@ def mapCB(data, lp):
     locGrid = grid[centerMin[0]:centerMax[0], centerMin[1]:centerMax[1]]
     x, y = np.where(locGrid > 50)
 
-    lp.track = np.vstack((x, y))
+    lp.setTrack(np.vstack((x, y)))
 
 
 def buildTrajMsg(traj, thor):
