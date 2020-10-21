@@ -57,7 +57,8 @@ RUN mkdir -p /home/docker/to_install/Ipopt
  WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/build 
  RUN ../configure --prefix=/home/docker/installed/Ipopt \ 
      && make \ 
-     && make install 
+     && make install
+RUN "cd /IPOPT/Ipopt-3.12.8/build; cp -a include/* /usr/include/.; cp -a lib/* /usr/lib/."
 #=============================================================================
 
 # Upgrade pip
