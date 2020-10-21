@@ -14,7 +14,8 @@ RUN apt-get install -y git \
                        vim \
                        ros-melodic-ackermann-msgs \
                        ros-melodic-genpy \
-                       libeigen3-dev
+                       libeigen3-dev \
+                       libarmadillo-dev
 
 # Upgrade pip
 # RUN pip install --upgrade pip
