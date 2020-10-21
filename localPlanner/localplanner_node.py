@@ -1,4 +1,4 @@
-#!/home/ckjensen/anaconda3/envs/bebot/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 19 15:57:17 2020
