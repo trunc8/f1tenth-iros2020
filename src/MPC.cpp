@@ -50,7 +50,7 @@ class FG_eval
             _dt = 0.1;  // in sec
             _ref_cte   = 0;
             _ref_epsi  = 0;
-            _ref_vel   = reference[2]
+            _ref_vel   = reference[2];
             _w_cte     = 100;
             _w_epsi    = 100;
             _w_vel     = 100;
@@ -307,7 +307,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,Eigen::V
     constraints_upperbound[_epsi_start] = epsi;
 
     // object that computes objective and constraints
-    FG_eval fg_eval(coeffs);
+    FG_eval fg_eval(coeffs, reference);
     fg_eval.LoadParams(_params);
     // options for IPOPT solver
     std::string options;
