@@ -12,6 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  ackermann_msgs
+  nav_msgs
+  tf
   message_generation
 )
 
@@ -143,7 +146,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(mpc_node src/MPC_Node.cpp)
+#add_executable(mpc_node src/MPC_Node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -216,8 +219,15 @@ install(DIRECTORY include/${PROJECT_NAME}/
 # catkin_add_nosetests(test)
 
 # MPC_Node
-ADD_EXECUTABLE( MPC_Node src/MPC.cpp src/MPC_Node.cpp )
-TARGET_LINK_LIBRARIES(MPC_Node MPC ipopt ${catkin_LIBRARIES} )
 
-include_directories(include)
-include_directories(usr/include)
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+include_directories( ${catkin_INCLUDE_DIRS} include )
+include_directories(/usr/include)
+link_directories(/usr/lib)
+
+# MPC_Node
+add_executable( mpc_node src/MPC_Node.cpp )
+TARGET_LINK_LIBRARIES(MPC_Node ipopt ${catkin_LIBRARIES} )
+
+
