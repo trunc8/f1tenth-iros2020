@@ -42,8 +42,8 @@ RUN mkdir -p /catkin_ws/src
 COPY . /catkin_ws/src/f1tenth_iros2020/
 
 # Cloning
-# RUN cd /catkin_ws/src/ && \
-#     git clone https://github.com/your_user/your_repo.git
+RUN cd /catkin_ws/src/ && \
+    git clone https://github.com/trunc8/obstacle_detector.git
 
 # Building your ROS packages
 RUN /bin/bash -c "source /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make; source devel/setup.bash"
