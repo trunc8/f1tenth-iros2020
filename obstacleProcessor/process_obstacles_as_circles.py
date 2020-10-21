@@ -3,7 +3,8 @@
 # trunc8 did this
 
 import rospy
-from obstacle_detector.msg import CircleObstacle, Obstacles
+# from obstacle_detector.msg import CircleObstacle, Obstacles
+from f1tenth_iros2020.msg import CircleObstacle, Obstacles
 from geometry_msgs.msg import Point
 import numpy as np
 
