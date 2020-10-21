@@ -228,6 +228,6 @@ link_directories(/usr/lib)
 
 # MPC_Node
 add_executable( mpc_node src/MPC_Node.cpp )
-TARGET_LINK_LIBRARIES(MPC_Node ipopt ${catkin_LIBRARIES} )
+TARGET_LINK_LIBRARIES(mpc_node ipopt ${catkin_LIBRARIES} )
 
 
