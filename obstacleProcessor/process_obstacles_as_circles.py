@@ -54,13 +54,13 @@ class Obstacle_Processor:
 
 		self.pub.publish(self.processed_obstacles_msg)
 
-if __name__ == '__main__':
-	try:
-		rospy.init_node('obstacle_postprocessor_node')
-		obs_proc = Obstacle_Processor()
-		while (rospy.get_time()==0):
-			pass
-		rospy.spin()
+# if __name__ == '__main__':
+# 	try:
+# 		rospy.init_node('obstacle_postprocessor_node')
+# 		obs_proc = Obstacle_Processor()
+# 		while (rospy.get_time()==0):
+# 			pass
+# 		rospy.spin()
 
-	except rospy.ROSInterruptException:
-		rospy.loginfo("Node terminated")
+# 	except rospy.ROSInterruptException:
+# 		rospy.loginfo("Node terminated")
