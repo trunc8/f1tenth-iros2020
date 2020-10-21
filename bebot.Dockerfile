@@ -38,27 +38,29 @@ RUN mkdir -p /home/docker/to_install/Ipopt
 
 #RUN "cd /IPOPT/Ipopt-3.12.8/build; cp -a include/* /usr/include/.; cp -a lib/* /usr/lib/."
 # ======== Start IPOPT installation ==================================================== 
- # Retrieve and copy all the dependencies needed by Ipopt 
- WORKDIR /home/docker/to_install/Ipopt 
- RUN wget http://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.8.tgz 
- RUN tar xvf ./Ipopt-3.12.8.tgz 
- WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Blas 
- RUN ./get.Blas 
- WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Lapack 
- RUN ./get.Lapack 
- WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Mumps 
- RUN ./get.Mumps 
- WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Metis 
- RUN ./get.Metis 
-  
- # Configure and compile Ipopt 
- WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ 
- RUN mkdir build 
- WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/build 
- RUN ../configure --prefix=/home/docker/installed/Ipopt \ 
-     && make \ 
-     && make install
-RUN "cd /IPOPT/Ipopt-3.12.8/build; cp -a include/* /usr/include/.; cp -a lib/* /usr/lib/."
+# Retrieve and copy all the dependencies needed by Ipopt 
+WORKDIR /home/docker/to_install/Ipopt 
+RUN wget http://www.coin-or.org/download/source/Ipopt/Ipopt-3.12.8.tgz 
+RUN tar xvf ./Ipopt-3.12.8.tgz 
+WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Blas 
+RUN ./get.Blas 
+WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Lapack 
+RUN ./get.Lapack 
+WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Mumps 
+RUN ./get.Mumps 
+WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ThirdParty/Metis 
+RUN ./get.Metis 
+
+# Configure and compile Ipopt 
+WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/ 
+RUN mkdir build 
+WORKDIR /home/docker/to_install/Ipopt/Ipopt-3.12.8/build 
+RUN ../configure \ 
+    && make \ 
+    && make install
+RUN cd /home/docker/to_install/Ipopt/Ipopt-3.12.8/build
+RUN cp -a include/* /usr/include/.
+RUN cp -a lib/* /usr/lib/.
 #=============================================================================
 
 # Upgrade pip
