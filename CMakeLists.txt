@@ -214,3 +214,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+# MPC_Node
+ADD_EXECUTABLE( MPC_Node src/MPC.cpp src/MPC_Node.cpp )
+TARGET_LINK_LIBRARIES(MPC_Node MPC ipopt ${catkin_LIBRARIES} )
+
+include_directories(include)
+include_directories(usr/include)
