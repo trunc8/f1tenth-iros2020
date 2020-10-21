@@ -15,7 +15,8 @@ RUN apt-get install -y git \
                        ros-melodic-ackermann-msgs \
                        ros-melodic-genpy \
                        libeigen3-dev \
-                       libarmadillo-dev
+                       libarmadillo-dev \
+                       python-catkin-tools
 
 # Upgrade pip
 # RUN pip install --upgrade pip
@@ -47,7 +48,7 @@ RUN cd /catkin_ws/src/ && \
     git clone https://github.com/trunc8/obstacle_detector.git
 
 # Building your ROS packages
-RUN /bin/bash -c "source /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make; source devel/setup.bash"
+RUN /bin/bash -c "source /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build; source devel/setup.bash"
 
 # Uncomment set the shell to bash to provide the "source" command
 # SHELL ["/bin/bash", "-c"] 
