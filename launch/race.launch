@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+    <include file="$(find f1tenth_gym_ros)/launch/gym_bridge_host.launch"/>
+
+    <rosparam command="load" file="$(find f1tenth_iros2020)/setup/berlin_obstacle.yaml" />
+    <rosparam command="load" file="$(find f1tenth_iros2020)/setup/params.yaml" />
+    <rosparam command="load" file="$(find f1tenth_iros2020)/setup/vegas_obstacle.yaml" />
+    <rosparam command="load" file="$(find f1tenth_iros2020)/globalPlanner/waypoints1.yaml" />
+    <rosparam command="load" file="$(find f1tenth_iros2020)/globalPlanner/waypoints2.yaml" />
+
+    <node pkg="f1tenth_iros2020" type="mpc_node" name="mpc_node_name" />
+    <node pkg="setup" type="obstacle_detector_src" name="obstacle_Detector_name" />
+    <node pkg="setup" type="obstacle_visualizer_src" name="obstacle_visualizer_name" />
+    <node pkg="setup" type="scans_merger" name="scans_merger_name" />
+    <node pkg="setup" type="static_scan_publisher" name="static_scan_publisher_name"/>
+   
+
+
+</launch>
