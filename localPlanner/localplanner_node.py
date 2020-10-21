@@ -86,9 +86,9 @@ class LocalPlanner:
         maxAngRate = self.wmax**2 - angularRate(traj)
         radii = np.repeat(self.obsRad**2, 2*self.deg+1+self.elev)
         separation = obstacleAvoidance([traj], self.obs, elev=self.elev) - radii - self.dsafe**2
-        track = obstacleAvoidance([traj], self.track, elev=self.elev) - self.dsafe**2
+        #track = obstacleAvoidance([traj], self.track, elev=self.elev) - self.dsafe**2
 
-        return np.concatenate([maxSpeed, maxAngRate, separation, track])
+        return np.concatenate([maxSpeed, maxAngRate, separation])#, track])
 
     def cost(self, x):
         y = _reshape(x, self.deg, self.tf, self.x0, self.v0, self.psi0)
