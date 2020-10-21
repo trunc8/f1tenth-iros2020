@@ -29,7 +29,8 @@ RUN pip3 install numpy \
                  llvmlite==0.33.0 \
                  numba \
                  matplotlib \
-                 rospkg
+                 rospkg \
+                 netifaces
 
 # Creating a catkin workspace
 RUN mkdir -p /catkin_ws/src
