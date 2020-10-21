@@ -22,7 +22,7 @@ from nav_msgs.msg import Odometry, OccupancyGrid
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import rospy
 
-from f1tenth_iros2020.msg import Trajectory, Obstacles
+from f1tenth_iros2020.msg import Obstacles#, Trajectory
 from optimization.AngularRate import angularRate
 from optimization.Speed import speed
 from optimization.ObstacleAvoidance import obstacleAvoidance
@@ -222,7 +222,7 @@ if __name__ == '__main__':
 
     # # Initialize ROS
     rospy.init_node('local_planner')
-    planPub = rospy.Publisher('/waypoints', Trajectory, queue_size=10)
+    planPub = rospy.Publisher('/waypoints', JointTrajectory, queue_size=10)
 
     rospy.Subscriber('/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
     rospy.Subscriber('/processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
