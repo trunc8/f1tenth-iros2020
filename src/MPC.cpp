@@ -33,22 +33,24 @@ class FG_eval
     public:
         // Fitted polynomial coefficients
         Eigen::VectorXd coeffs;
+        Eigen::VectorXd reference;
 
         double _Lf, _dt, _ref_cte, _ref_epsi, _ref_vel; 
         double  _w_cte, _w_epsi, _w_vel, _w_delta, _w_accel, _w_delta_d, _w_accel_d;
         int _mpc_steps, _x_start, _y_start, _psi_start, _v_start, _cte_start, _epsi_start, _delta_start, _a_start;
 
         // Constructor
-        FG_eval(Eigen::VectorXd coeffs) 
+        FG_eval(Eigen::VectorXd coeffs, Eigen::VectorXd reference) 
         { 
-            this->coeffs = coeffs; 
+            this->coeffs = coeffs;
+            this->reference = reference; 
 
             // Set default value    
             _Lf = 0.25; // distance between the front of the vehicle and its center of gravity
             _dt = 0.1;  // in sec
             _ref_cte   = 0;
             _ref_epsi  = 0;
-            _ref_vel   = 1.0; // m/s
+            _ref_vel   = reference[2]
             _w_cte     = 100;
             _w_epsi    = 100;
             _w_vel     = 100;
@@ -227,7 +229,7 @@ void MPC::LoadParams(const std::map<string, double> &params)
 }
 
 
-vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) 
+vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs,Eigen::VectorXd reference) 
 {
     bool ok = true;
     size_t i;

@@ -31,7 +31,7 @@
 #include <ackermann_msgs/AckermannDriveStamped.h>
 #include <visualization_msgs/Marker.h>
 
-#include "f1tenth_iros2020/MPC.h"
+#include "MPC.h"
 #include <Eigen/Core>
 #include <Eigen/QR>
 
@@ -279,10 +279,10 @@ void MPCNode::pathCB(const trajectory_msgs::JointTrajectory::ConstPtr& pathMsg)
     {
         _path.points = pathMsg->points;  
         _path_computed = true;
-        double speed = std::sqrt(pathMsg->points.velocities[0]*pathMsg->points.velocities[0] + 
-                                 pathMsg->points.velocities[1]*pathMsg->points.velocities[1]);
+        double speed = std::sqrt(pathMsg->points[0].velocities[0]*pathMsg->points[0].velocities[0] + 
+                                 pathMsg->points[0].velocities[1]*pathMsg->points[0].velocities[1]);
 
-        ref_vel = speed;
+        _ref_vel = speed;
     }
 }
 
@@ -331,6 +331,7 @@ void MPCNode::controlLoopCB(const ros::TimerEvent&)
         const double cte  = polyeval(coeffs, 0.0);
         const double epsi = atan(coeffs[1]);
         VectorXd state(8);
+        VectorXd reference(3);
        
         // Kinematic model is used to predict vehicle state at the actual
         // moment of control (current time + delay dt)
@@ -379,9 +380,10 @@ void MPCNode::controlLoopCB(const ros::TimerEvent&)
         const double cte_act = cte + v * sin(epsi) * dt;
         const double epsi_act = -epsi + psi_act;             
         state << px_act, py_act, psi_act, v_act, cte_act,epsi_act,w_act, slip_angle_act;
-        
+
+        reference << _path.points[0].positions[0], _path.points[0].positions[0], _ref_vel;
         // Solve MPC Problem
-        vector<double> mpc_results = _mpc.Solve(state, coeffs);
+        vector<double> mpc_results = _mpc.Solve(state, coeffs, reference);
               
         // MPC result (all described in car frame)        
         _steering = mpc_results[0]; // radian
