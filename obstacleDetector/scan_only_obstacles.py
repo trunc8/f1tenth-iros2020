@@ -11,7 +11,7 @@ import tf
 import math
 import cv2
 import numpy as np
-import rospkg
+# import rospkg
 
 class Scan_Filter:
 	def __init__(self):
@@ -33,8 +33,9 @@ class Scan_Filter:
 		self.ts.registerCallback(self.filter_track_out)
 
 	def get_eroded_map_attributes(self):
-		rospack = rospkg.RosPack()
-		map_path = rospack.get_path('f1tenth_gym_ros') + '/maps/vegas.png'
+		# rospack = rospkg.RosPack()
+		# map_path = rospack.get_path('f1tenth_gym_ros') + '/maps/vegas.png'
+		map_path = os.path.join('..', 'map', 'vegas.png')
 		img = cv2.imread(map_path)[:,:,0] # Keep a single channel; RGB channels are identical
 		# print(img.shape): (2248, 3000)
 		kernel = np.ones((10,10), np.uint8) # Structuring element for erosion
