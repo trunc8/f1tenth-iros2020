@@ -24,6 +24,8 @@ RUN apt-get install -y git \
 # RUN pip install numpy==1.16.0 \
 #                 scipy==1.2.0 \
 #                 pyyaml
+RUN pip install opencv-python==4.2.0.32
+
 RUN pip3 install numpy \
                  scipy \
                  pyyaml \
