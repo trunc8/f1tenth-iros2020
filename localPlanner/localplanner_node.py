@@ -246,7 +246,7 @@ if __name__ == '__main__':
 
     # # Initialize ROS
     rospy.init_node('local_planner')
-    planPub = rospy.Publisher('/waypoints', JointTrajectory, queue_size=10)
+    # planPub = rospy.Publisher('/waypoints', JointTrajectory, queue_size=10)
     planPub2 = rospy.Publisher('trajectory', Twist, queue_size=10)
 
     rospy.Subscriber('odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
