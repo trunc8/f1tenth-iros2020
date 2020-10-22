@@ -3,7 +3,6 @@
 # trunc8 did this
 
 import rospy
-from std_msgs.msg import Float64MultiArray
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 import message_filters
@@ -11,7 +10,8 @@ import tf
 import math
 import cv2
 import numpy as np
-import rospkg
+import os
+# import rospkg
 
 class Scan_Filter:
 	def __init__(self):
@@ -26,15 +26,16 @@ class Scan_Filter:
 
 		self.odom = None
 		self.scan = None
-		self.odom_sub = message_filters.Subscriber('/odom', Odometry)
-		self.scan_sub = message_filters.Subscriber('/scan', LaserScan)
+		self.odom_sub = message_filters.Subscriber('/191747/odom', Odometry)
+		self.scan_sub = message_filters.Subscriber('/191747/scan', LaserScan)
 		self.ts = message_filters.ApproximateTimeSynchronizer([self.odom_sub, self.scan_sub], queue_size=10, slop=1)
 		# "slop" parameter defines the delay (in seconds) with which messages can be synchronized
 		self.ts.registerCallback(self.filter_track_out)
 
 	def get_eroded_map_attributes(self):
-		rospack = rospkg.RosPack()
-		map_path = rospack.get_path('f1tenth_gym_ros') + '/maps/vegas.png'
+		# rospack = rospkg.RosPack()
+		# map_path = rospack.get_path('f1tenth_gym_ros') + '/maps/vegas.png'
+		map_path = os.path.join(os.path.dirname(__file__), '..', 'map', 'vegas.png')
 		img = cv2.imread(map_path)[:,:,0] # Keep a single channel; RGB channels are identical
 		# print(img.shape): (2248, 3000)
 		kernel = np.ones((10,10), np.uint8) # Structuring element for erosion
@@ -114,40 +115,15 @@ class Scan_Filter:
 		self.sc_filter_msg = self.scan
 		self.sc_filter_msg.ranges = filtered_ranges
 		self.pub.publish(self.sc_filter_msg)
-		rospy.loginfo("sc_filter published!")
+		# rospy.loginfo("sc_filter published!")
 
-if __name__ == '__main__':
-	try:
-		rospy.init_node('scan_filter_node', disable_signals=True)
-		sc_filter = Scan_Filter()
-		while (rospy.get_time()==0):
-			pass
-		rospy.spin()
+# if __name__ == '__main__':
+# 	try:
+# 		rospy.init_node('scan_filter_node', disable_signals=True)
+# 		sc_filter = Scan_Filter()
+# 		while (rospy.get_time()==0):
+# 			pass
+# 		rospy.spin()
 
-	except rospy.ROSInterruptException:
-		rospy.loginfo("Node terminated")
-
-
-# Quick Testing of below code
-# rospack = rospkg.RosPack()
-
-# img_path = rospack.get_path('f1tenth_gym_ros') + '/maps/vegas.png'
-
-# img = cv2.imread(img_path)[:,:,:] # Keep a single channel; RGB channels are identical
-# kernel = np.ones((5,5), np.uint8) # Structuring element for erosion
-# img = cv2.erode(img, kernel)
-# # From the vegas.yaml file:
-# #   resolution: 0.050000
-# #   origin: [-11.606540, -27.320793, 0.000000]
-# # Locating this point on our eroded img
-# resolution = 0.05 # This converts meters to pixel coordinates
-# x_origin = 11.60654/resolution
-# y_notional = 27.320793/resolution
-# y_origin = 2248 - y_notional # Since OpenCV flips y-axis
-# cv2.namedWindow("Morphed",cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Morphed", 2248,3000)
-# cv2.circle(img, (int(x_origin), int(y_origin)), 10, (255,255,0), 5)
-# cv2.imshow("Morphed", img)
-# print(img.shape)
-# print(img[int(y_origin), int(x_origin)]) # We must check in this order: img(y,x)
-# cv2.waitKey(0)
+# 	except rospy.ROSInterruptException:
+# 		rospy.loginfo("Node terminated")

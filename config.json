@@ -1,6 +1,6 @@
 {
     "local_planner": {
-        "time_horizon": 3.0
+        "time_horizon": 1.0
     },
     "tt_controller": {
         "dummy_value": true

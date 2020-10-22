@@ -10,7 +10,7 @@ import numpy as np
 class Obstacle_Processor:
 	def __init__(self):
 		self.processed_obstacles_msg = Obstacles()
-		self.pub = rospy.Publisher('processed_obstacles', Obstacles, queue_size=10)
+		self.pub = rospy.Publisher('/191747/processed_obstacles', Obstacles, queue_size=10)
 		self.sub = rospy.Subscriber('obstacles', Obstacles, self.process_obstacles)
 
 	def process_obstacles(self, obstacles_msg):
@@ -54,13 +54,13 @@ class Obstacle_Processor:
 
 		self.pub.publish(self.processed_obstacles_msg)
 
-if __name__ == '__main__':
-	try:
-		rospy.init_node('obstacle_postprocessor_node')
-		obs_proc = Obstacle_Processor()
-		while (rospy.get_time()==0):
-			pass
-		rospy.spin()
+# if __name__ == '__main__':
+# 	try:
+# 		rospy.init_node('obstacle_postprocessor_node')
+# 		obs_proc = Obstacle_Processor()
+# 		while (rospy.get_time()==0):
+# 			pass
+# 		rospy.spin()
 
-	except rospy.ROSInterruptException:
-		rospy.loginfo("Node terminated")
+# 	except rospy.ROSInterruptException:
+# 		rospy.loginfo("Node terminated")
