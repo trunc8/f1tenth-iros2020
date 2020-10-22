@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # frame_id = rospy.get_param('~frame_id', 'odom')
 
     wheelbase = 0.3302
-    twist_cmd_topic = 'trajectory'
+    twist_cmd_topic = '/191747/trajectory'
     frame_id = 'map'
     ackermann_cmd_topic = '/191747/drive'
 

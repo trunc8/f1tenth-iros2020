@@ -254,17 +254,17 @@ if __name__ == '__main__':
     # # Initialize ROS
     rospy.init_node('local_planner')
     # planPub = rospy.Publisher('/waypoints', JointTrajectory, queue_size=10)
-    planPub2 = rospy.Publisher('trajectory', Twist, queue_size=10)
+    planPub2 = rospy.Publisher('/191747/trajectory', Twist, queue_size=10)
 
-    rospy.Subscriber('odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
+    rospy.Subscriber('/191747/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
     rospy.Subscriber('processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
     rospy.Subscriber('map', OccupancyGrid, lambda x: mapCB(x, lp), queue_size=10)
 
     rospy.loginfo('Waiting for odometry message...')
-    rospy.wait_for_message('odom', Odometry)
+    rospy.wait_for_message('/191747/odom', Odometry)
     rospy.loginfo('---> Odometry message found!')
     rospy.loginfo('Waiting for obstacle message...')
-    rospy.wait_for_message('processed_obstacles', Obstacles)
+    rospy.wait_for_message('/191747/processed_obstacles', Obstacles)
     rospy.loginfo('---> Obstacle message found!')
 
     traj = lp.plan()
