@@ -238,7 +238,7 @@ def buildTrajMsg2(traj, t0, t):
         except ZeroDivisionError:
             w = 0
 
-    trajMsg.linear.x = v*0.05
+    trajMsg.linear.x = v
     trajMsg.angular.z = w
 
     return trajMsg
