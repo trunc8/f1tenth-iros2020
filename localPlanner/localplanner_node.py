@@ -218,6 +218,7 @@ def buildTrajMsg2(traj, t0, t):
     trajMsg = Twist()
 
     v = np.linalg.norm(traj(t - t0))
+    traj.cpts *= 0.05
     trajdot = traj.diff()
     trajddot = trajdot.diff()
 
@@ -237,7 +238,7 @@ def buildTrajMsg2(traj, t0, t):
         except ZeroDivisionError:
             w = 0
 
-    trajMsg.linear.x = v
+    trajMsg.linear.x = v*0.05
     trajMsg.angular.z = w
 
     return trajMsg

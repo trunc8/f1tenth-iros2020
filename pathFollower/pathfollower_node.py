@@ -43,7 +43,7 @@ if __name__ == '__main__':
     wheelbase = 0.3302
     twist_cmd_topic = 'trajectory'
     frame_id = 'map'
-    ackermann_cmd_topic = 'drive'
+    ackermann_cmd_topic = '/191747/drive'
 
     def cb(data): return cmd_callback(data, wheelbase, ackermann_cmd_topic, frame_id, pub)
     rospy.Subscriber(twist_cmd_topic, Twist, cb, queue_size=10)
