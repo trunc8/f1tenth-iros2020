@@ -232,7 +232,13 @@ def buildTrajMsg2(traj, t0, t):
     if v < 1e-6:
         w = 0
     else:
-        w = (num/den)(t)
+        try:
+            w = num(t-t0) / den(t-t0)
+        except ZeroDivisionError:
+            w = 0
+
+    trajMsg.linear.x = v
+    trajMsg.angular.z = w
 
     return trajMsg
 
