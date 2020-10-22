@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(Eigen3 REQUIRED)
+#find_package(Eigen3 REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -128,9 +128,9 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
+  #include
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
+  # ${EIGEN3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -223,11 +223,11 @@ include_directories(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 #include_directories( ${catkin_INCLUDE_DIRS} include )
-include_directories(/usr/include)
-link_directories(/usr/lib)
+#include_directories(/usr/include)
+#link_directories(/usr/lib)
 
 # MPC_Node
-add_executable( mpc_node src/MPC.cpp src/MPC_Node.cpp )
-TARGET_LINK_LIBRARIES(mpc_node ipopt ${catkin_LIBRARIES} )
+#add_executable( mpc_node src/MPC.cpp src/MPC_Node.cpp )
+#TARGET_LINK_LIBRARIES(mpc_node ipopt ${catkin_LIBRARIES} )
 
 

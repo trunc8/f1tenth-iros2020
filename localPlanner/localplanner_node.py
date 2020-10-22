@@ -18,6 +18,7 @@ from scipy.optimize import Bounds, minimize
 from scipy.spatial.transform import Rotation as R
 
 # from obstacle_detector.msg import Obstacles
+from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry, OccupancyGrid
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import rospy
@@ -213,6 +214,29 @@ def buildTrajMsg(traj, thor):
     return trajMsg
 
 
+def buildTrajMsg2(traj, t0, t):
+    trajMsg = Twist()
+
+    v = np.linalg.norm(traj(t - t0))
+    trajdot = traj.diff()
+    trajddot = trajdot.diff()
+
+    xdot = trajdot.x
+    ydot = trajdot.y
+    xddot = trajddot.x
+    yddot = trajddot.y
+
+    num = yddot*xdot - xddot*ydot
+    den = xdot*xdot + ydot*ydot
+
+    if v < 1e-6:
+        w = 0
+    else:
+        w = (num/den)(t)
+
+    return trajMsg
+
+
 if __name__ == '__main__':
     with open(os.path.join(os.path.dirname(__file__), '..', 'config.json'), 'r') as f:
         data = json.load(f)
@@ -223,16 +247,17 @@ if __name__ == '__main__':
     # # Initialize ROS
     rospy.init_node('local_planner')
     planPub = rospy.Publisher('/waypoints', JointTrajectory, queue_size=10)
+    planPub2 = rospy.Publisher('trajectory', Twist, queue_size=10)
 
-    rospy.Subscriber('/odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
-    rospy.Subscriber('/processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
-    rospy.Subscriber('/map', OccupancyGrid, lambda x: mapCB(x, lp), queue_size=10)
+    rospy.Subscriber('odom', Odometry, lambda x: odomCB(x, lp), queue_size=10)
+    rospy.Subscriber('processed_obstacles', Obstacles, lambda x: obsCB(x, lp), queue_size=10)
+    rospy.Subscriber('map', OccupancyGrid, lambda x: mapCB(x, lp), queue_size=10)
 
     rospy.loginfo('Waiting for odometry message...')
-    rospy.wait_for_message('/odom', Odometry)
+    rospy.wait_for_message('odom', Odometry)
     rospy.loginfo('---> Odometry message found!')
     rospy.loginfo('Waiting for obstacle message...')
-    rospy.wait_for_message('/processed_obstacles', Obstacles)
+    rospy.wait_for_message('processed_obstacles', Obstacles)
     rospy.loginfo('---> Obstacle message found!')
 
     traj = lp.plan()
@@ -252,14 +277,16 @@ if __name__ == '__main__':
     # trajInit.plot(ax)
     #=========================================================================
 
-    trajMsg = buildTrajMsg(traj, thor)
-    planPub.publish(trajMsg)
+    # trajMsg = buildTrajMsg(traj, thor)
+    # planPub.publish(trajMsg)
     tlast = rospy.get_time()
     while not rospy.is_shutdown():
         tnow = rospy.get_time()
+        msg = buildTrajMsg2(traj, tlast, tnow)
+        planPub2.publish(msg)
         if tnow - tlast >= thor:
             tlast = tnow
             traj = lp.plan()
-            trajMsg = buildTrajMsg(traj, thor)
-            planPub.publish(trajMsg)
+            # trajMsg = buildTrajMsg(traj, thor)
+            # planPub.publish(trajMsg)
 
