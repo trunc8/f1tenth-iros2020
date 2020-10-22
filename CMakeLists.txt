@@ -114,7 +114,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES f1tenth_iros2020
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
@@ -192,11 +192,11 @@ include_directories(
 # )
 
 ## Mark cpp header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#install(DIRECTORY include/${PROJECT_NAME}/
+#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 #   FILES_MATCHING PATTERN "*.h"
 #   PATTERN ".svn" EXCLUDE
-)
+#)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -222,12 +222,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories( ${catkin_INCLUDE_DIRS} include )
+#include_directories( ${catkin_INCLUDE_DIRS} include )
 include_directories(/usr/include)
 link_directories(/usr/lib)
 
 # MPC_Node
-add_executable( mpc_node src/MPC_Node.cpp )
+add_executable( mpc_node src/MPC.cpp src/MPC_Node.cpp )
 TARGET_LINK_LIBRARIES(mpc_node ipopt ${catkin_LIBRARIES} )
 
 
