@@ -4,9 +4,6 @@
     <node pkg="f1tenth_iros2020" type="obstacleprocessor_node.py" name="obstacleprocessor_name" />
     <node pkg="f1tenth_iros2020" type="localplanner_node.py" name="localplanner_name" />
     <node pkg="obstacle_detector" type="obstacle_detector_src" name="obstacle_detector_name" />
-    <node pkg="f1tenth_iros2020" type="mpc_node" name="mpc_node_name" />
-    
-   
-
+    <node pkg="f1tenth_iros2020" type="pathfollower_node.py" name="pathfollower_name" />
 
 </launch>
