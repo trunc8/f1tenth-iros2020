@@ -10,7 +10,7 @@ import numpy as np
 class Obstacle_Processor:
 	def __init__(self):
 		self.processed_obstacles_msg = Obstacles()
-		self.pub = rospy.Publisher('processed_obstacles', Obstacles, queue_size=10)
+		self.pub = rospy.Publisher('/191747/processed_obstacles', Obstacles, queue_size=10)
 		self.sub = rospy.Subscriber('obstacles', Obstacles, self.process_obstacles)
 
 	def process_obstacles(self, obstacles_msg):

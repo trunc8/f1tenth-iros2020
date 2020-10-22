@@ -26,8 +26,8 @@ class Scan_Filter:
 
 		self.odom = None
 		self.scan = None
-		self.odom_sub = message_filters.Subscriber('/odom', Odometry)
-		self.scan_sub = message_filters.Subscriber('/scan', LaserScan)
+		self.odom_sub = message_filters.Subscriber('/191747/odom', Odometry)
+		self.scan_sub = message_filters.Subscriber('/191747/scan', LaserScan)
 		self.ts = message_filters.ApproximateTimeSynchronizer([self.odom_sub, self.scan_sub], queue_size=10, slop=1)
 		# "slop" parameter defines the delay (in seconds) with which messages can be synchronized
 		self.ts.registerCallback(self.filter_track_out)
