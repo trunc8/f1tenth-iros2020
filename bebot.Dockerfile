@@ -66,8 +66,8 @@ RUN apt-get install -y git \
 ##=============================================================================
 
 # Upgrade pip
-RUN pip install --upgrade pip
-RUN pip3 install --upgrade pip3
+#RUN pip install --upgrade pip
+#RUN pip3 install --upgrade pip3
 
 # Install pip dependencies, add your pip dependencies to this list
 # RUN pip install numpy==1.16.0 \
@@ -81,8 +81,8 @@ RUN pip install opencv-python==4.2.0.32
 RUN pip3 install scipy \
                  numpy \
                  pyyaml \
-                 llvmlite==0.33.0 \
-                 numba \
+                 llvmlite==0.32.1 \
+                 numba==0.49.1 \
                  matplotlib \
                  rospkg \
                  netifaces
