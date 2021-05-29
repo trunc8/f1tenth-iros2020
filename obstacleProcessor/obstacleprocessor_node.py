@@ -10,7 +10,8 @@ import math
 import cv2
 import os
 
-from obstacle_detector.msg import CircleObstacle, Obstacles
+# from obstacle_detector.msg import CircleObstacle, Obstacles
+from f1tenth_iros2020.msg import CircleObstacle, Obstacles
 from geometry_msgs.msg import Point
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
