@@ -1,4 +1,5 @@
 # F1tenth_IROS2020
+Event: [Autonomous Racing F1tenth @ IROS2020](https://f1tenth.org/iros2020)
 
 ### Steps to Replicate Workspace
 
